@@ -11,6 +11,11 @@ type Book struct {
 	Auther string `josn:"auther"`
 }
 
+type concurency struct{
+	kip string
+	us string
+}
+
 var books []Book
 
 
