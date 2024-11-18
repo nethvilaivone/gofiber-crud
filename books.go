@@ -1,11 +1,12 @@
-package main 
-
+package main
 
 import (
-	"github.com/gofiber/fiber/v2"
+	
 	"strconv"
-)
+	"github.com/gofiber/fiber/v2"
+	
 
+)
 
 func getbooks(c *fiber.Ctx) error {
 	return c.JSON(books)
@@ -48,7 +49,7 @@ func updateBooks(c *fiber.Ctx) error {
 	if err := c.BodyParser(updateNewbook); err != nil {
 		return c.Status(fiber.StatusBadRequest).SendString(err.Error())
 	}
-	
+
 	for i, book := range books {
 		if book.Id == bookid {
 			books[i].Title = updateNewbook.Title
@@ -61,21 +62,41 @@ func updateBooks(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusNotFound).SendString(err.Error())
 }
 
-
 func deletebook(c *fiber.Ctx) error {
 	bookid, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).SendString(err.Error())
-	} 
+	}
 
 	for i, book := range books {
 		if book.Id == bookid {
-			books = append(books[:i],books[i+1:]...)
+			books = append(books[:i], books[i+1:]...)
 			return c.SendStatus(fiber.StatusNoContent)
 		}
-
 
 	}
 	return c.Status(fiber.StatusNotFound).SendString(err.Error())
 
+}
+
+func updoadfile(c *fiber.Ctx) error {
+	fileimage, err := c.FormFile("image")
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).SendString(err.Error())
+	}
+	err = c.SaveFile(fileimage, "./upload/"+fileimage.Filename)
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+
+	}
+	return c.SendString("file name send completed")
+}
+
+func gettemplathtmlfunc(c *fiber.Ctx) error {
+	return c.Render("index", fiber.Map{
+		"Title":    "hello, world!",
+		"Name":     "Lambo",
+		"Lastname": "Vilaivone",
+	})
 }
